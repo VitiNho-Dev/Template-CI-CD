@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  check-app:
+    # Passar o nome do arquivo que vai rodar os comandos do CI
+    uses: ./.github/workflows/flutter_package.yml
+    with:
+      # Setar versão que o App está utilizando
+      flutter_version: "3.3.9"
+      # Nome da pasta do App
+      working_directory: app
+
+  # Caso esteja utilizando packages siga o exemplo abaixo
+  check-core:
+    uses: ./.github/workflows/flutter_package.yml
+    with:
+      # Setar versão que o Package está utilizando
+      flutter_version: "3.3.9"
+      # Nome da pasta do package, caso esteja em nível diferente da pasta .gitHub,
+      # passar o caminho pelo nome das pastas como no exemplo abaixo
+      working_directory: packages/core
+
+  # Arquivo responsável por validar o nome do Pull Request
+  check-semantic-pull-request:
+    uses: ./.github/workflows/semantic_pull_request.yml
+
+  build:
+    # Adicionar o nome dos CHECK que será executado
+    needs: [check-app, check-core, check-semantic-pull-request]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: noop
+        run: echo 'noop'

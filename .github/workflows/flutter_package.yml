@@ -1,0 +1,80 @@
+name: Flutter Workflow
+
+on:
+  # Inputs dos workflow que será utilizado
+  workflow_call:
+    inputs:
+      concurrency:
+        required: false
+        type: number
+        default: 4
+      coverage_excludes:
+        required: false
+        type: string
+        default: ""
+      flutter_channel:
+        required: false
+        type: string
+        default: ""
+      flutter_version:
+        required: false
+        type: string
+        # Setar a versão do Flutter SDK que está sendo utilizado
+        default: "3.3.9"
+      working_directory:
+        required: false
+        type: string
+        default: "."
+      min_coverage:
+        required: false
+        type: number
+        default: 80
+      test_optimization:
+        required: false
+        type: boolean
+        default: true
+      test_recursion:
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  # A partir desse ponto as configurações são padrões e não necessitam de modificações
+  build:
+    defaults:
+      run:
+        working-directory: ${{inputs.working_directory}}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v3
+
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@v2
+
+      - name: 🎬 FVM
+        uses: kuhnroyal/flutter-fvm-config-action@v1
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: ${{inputs.flutter_channel}}
+          cache: true
+
+      - name: ✨ Check Formatting
+        run: flutter format --set-exit-if-changed lib test
+
+      - name: 🕵️ Analyze
+        run: flutter analyze lib test
+
+      - name: 🧪 Run Tests
+        run: flutter test --machine > test-results.json
+
+      - name: 📊 Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: ${{inputs.working_directory}} Tests Report
+          path: ${{inputs.working_directory}}/test-results.json
+          fail-on-error: false
+          reporter: flutter-json

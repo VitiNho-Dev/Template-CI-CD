@@ -1,0 +1,24 @@
+name: Dart Code Metrics
+
+on:
+  pull_request:
+  push:
+    branches:
+      - developer
+
+jobs:
+  check:
+    name: dart-code-metrics-action
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: dart-code-metrics
+        uses: dart-code-checker/dart-code-metrics-action@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Nome da pasta que está o App, caso esteja em nível diferente da pasta .gitHub, e
+          # passar o caminho pelo nome das pastas como no exemplo abaixo:
+          # relative_path: exemplo/app
