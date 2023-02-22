@@ -50,3 +50,14 @@ Para rodar o CI/CD em seu projeto esse template utiliza 6 arquivos que vai rodar
 
 
 # Como usar os arquivos
+  O arquivo que tem mais configuração manual é o de CI pois o usuário deve passar os caminhos e o nome das pastas no qual ele vai querer que o CI analise, os demais arquivos poderão ser alterados mais não é necessário, tem comentário nos arquivos onde deve ser configurado versão que está sendo utilizado no App da SDK do Flutter e do Dart, e o nome das pasta do package assim como no exemplo abaixo:
+  ``` yml
+  check-app:
+    # Passar o nome do arquivo que vai rodar os comandos do CI
+    uses: ./.github/workflows/flutter_package.yml
+    with:
+      # Setar versão que o App está utilizando
+      flutter_version: "3.3.9"
+      # Nome da pasta do App
+      working_directory: app_exemple
+  ```
